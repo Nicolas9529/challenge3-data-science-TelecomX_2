@@ -60,5 +60,28 @@ Basados estrictamente en los datos analizados y el modelo seleccionado, proponem
 * **Lenguaje:** Python
 * **Manipulación de Datos:** Pandas, Numpy
 * **Visualización:** Matplotlib, Seaborn
+
+* # 📉 Proyecto Telecom X - Parte 2: Predicción de Cancelación (Churn)
+
+## 🎯 Propósito del Análisis
+El objetivo principal de este proyecto es desarrollar un modelo de Machine Learning capaz de **predecir el churn (cancelación de servicios) de los clientes** de la empresa "Telecom X". Al identificar de manera proactiva a los usuarios con alta probabilidad de abandonar la compañía basándonos en variables históricas de comportamiento y facturación, buscamos proporcionar a la gerencia herramientas y estrategias basadas en datos para maximizar la retención.
+
+---
+
+## 📂 Estructura del Proyecto
+El repositorio está organizado de la siguiente manera para facilitar su reproducibilidad:
+
+```text
+📦 challenge3-data-science-TelecomX_2
+ ┣ 📂 data
+ ┃ ┗ 📜 datos_tratados.csv        # Dataset limpio y preprocesado (obtenido en la Parte 1)
+ ┣ 📂 notebooks
+ ┃ ┗ 📜 Telecom_X_Modelado.ipynb  # Cuaderno principal con el código de Machine Learning
+ ┣ 📂 images                      # Visualizaciones exportadas del EDA y evaluación de modelos
+ ┃ ┣ 🖼️ matriz_correlacion.png
+ ┃ ┣ 🖼️ eda_boxplots.png
+ ┃ ┗ 🖼️ feature_importance.png
+ ┣ 📜 modelo_churn_produccion.pkl # Modelo final serializado listo para producción
+ ┗ 📜 README.md                   # Documentación del proyecto
 * **Machine Learning:** Scikit-Learn (Modelado, Preprocesamiento, Métricas)
 * **Balanceo de Datos:** Imbalanced-learn (SMOTE)
