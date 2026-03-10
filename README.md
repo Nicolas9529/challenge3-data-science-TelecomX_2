@@ -1,77 +1,79 @@
 # 📉 Proyecto Telecom X: Análisis y Predicción de Fuga de Clientes (Churn)
 
-## 🎯 Propósito y Descripción del Proyecto
-El objetivo principal de este proyecto de Data Science es desarrollar un modelo predictivo capaz de anticipar la cancelación de servicios (Churn) de los clientes de la empresa "Telecom X". A través de la aplicación del método científico, limpiamos datos históricos, analizamos comportamientos y entrenamos modelos de Machine Learning (optimizados con Validación Cruzada) para identificar a los usuarios con mayor riesgo de abandono. Esto permite a la gerencia diseñar estrategias de retención proactivas basadas en evidencia.
+## 📖 Propósito y Descripción del Proyecto
+El objetivo principal de este proyecto es desarrollar un modelo predictivo capaz de anticipar la cancelación de servicios (Churn) de los clientes de la empresa "Telecom X". A través del método científico, limpiamos datos históricos, analizamos comportamientos y entrenamos modelos de Machine Learning para identificar proactivamente a los usuarios con mayor riesgo de abandono. Esto permite a la gerencia diseñar estrategias de retención basadas en evidencia.
 
 ---
 
 ## 📂 Estructura del Proyecto
 El repositorio está organizado de la siguiente manera para facilitar su reproducibilidad:
 
-```text
 📦 challenge3-data-science-TelecomX_2
  ┣ 📂 data
- ┃ ┗ 📜 datos_tratados.csv        # Dataset limpio y preprocesado (obtenido en la Parte 1)
+ ┃ ┗ 📜 datos_tratados.csv        # Dataset limpio y preprocesado
  ┣ 📂 notebooks
- ┃ ┗ 📜 Telecom_X_Modelado.ipynb  # Cuaderno principal con el código de Machine Learning
- ┣ 📂 images                      # Visualizaciones exportadas del EDA y modelos
+ ┃ ┗ 📜 Telecom_X_Modelado.ipynb  # Cuaderno principal con el código
+ ┣ 📂 images                      # Visualizaciones exportadas del EDA
  ┃ ┣ 🖼️ matriz_correlacion.png
  ┃ ┣ 🖼️ eda_boxplots.png
  ┃ ┗ 🖼️ feature_importance.png
- ┣ 📜 modelo_churn_produccion.pkl # Modelo final serializado listo para producción
+ ┣ 📜 modelo_churn_produccion.pkl # Modelo final serializado
  ┗ 📜 README.md                   # Documentación del proyecto
 
-⚙️ Preparación de Datos y Metodología (Enfoque Científico)
-Fase 1: Limpieza y Exploración (EDA)
-Preprocesamiento: Tratamiento de valores nulos, corrección de formatos y eliminación de variables sin poder predictivo (ej. identificadores únicos).
+---
 
-Insights del EDA: A través de Boxplots y Matrices de Correlación, observamos que los clientes que se fugan tienen una mediana de tiempo en la empresa (Tenure) drásticamente menor (aprox. 10 meses vs 38 meses) y cargos mensuales significativamente más altos.
+## 🔬 Metodología (Enfoque Científico)
 
-Fase 2: Ingeniería de Características y Balanceo
-Codificación: Transformación de la variable objetivo a binario con LabelEncoder y variables categóricas nominales (ej. Método de Pago) con OneHotEncoder(drop='if_binary').
+### Fase 1: Observación y Preprocesamiento (EDA)
+* **Limpieza de Datos:** Tratamiento de valores nulos, corrección de formatos y eliminación de variables sin poder predictivo (ej. CustomerID).
+* **Análisis Exploratorio (EDA):** Identificamos visualmente patrones preliminares. Observamos mediante Boxplots que variables como el tiempo en la empresa (`Tenure`) y los costos (`Charges`) presentan distribuciones drásticamente distintas entre los clientes que se fugan y los que se quedan.
 
-División (Train/Test Split): Separación en Entrenamiento (80%) y Prueba (20%) estratificando la variable objetivo para evitar la fuga de datos (Data Leakage).
+### Fase 2: Experimentación y Modelado
+* **Preparación de Datos:** * Se aplicó codificación (`LabelEncoder` y `OneHotEncoder`) para transformar variables categóricas en numéricas.
+  * Los datos se dividieron en Entrenamiento (80%) y Prueba (20%) de forma estratificada.
+  * Se aplicó **SMOTE** únicamente al conjunto de entrenamiento para balancear la clase minoritaria (fugas).
+  * Se estandarizaron las numéricas con `StandardScaler`.
+* **Modelos Entrenados:** Evaluamos una progresión algorítmica desde una línea base hasta modelos complejos.
 
-Estandarización y SMOTE: Se aplicó StandardScaler a las variables numéricas y balanceo sintético (SMOTE) exclusivamente al set de entrenamiento para resolver el desbalance de clases y permitir un aprendizaje equitativo.
+---
 
-🧠 Modelado, Experimentación y Justificaciones
-Evaluamos de forma progresiva diferentes algoritmos para establecer el valor del Machine Learning:
+## 📊 Resultados y Justificaciones de Modelado
 
-Línea Base (Dummy Classifier): Predijo siempre la clase mayoritaria (retención). Obtuvo un Recall de 0% para la fuga, demostrando que predecir "al azar" es inútil operativamente.
+La evaluación en el conjunto de prueba arrojó la siguiente evolución:
 
-Random Forest Base: Nuestro modelo inicial no paramétrico. Logró una Exactitud del 79%, pero un Recall del 50%, lo que evidenció un sobreajuste (overfitting) a la clase mayoritaria.
+1. **Línea Base (Dummy Classifier):** Obtuvo un Recall de 0% para la fuga. Predijo que nadie se iría, demostrando que predecir la clase mayoritaria es inútil para el negocio.
+2. **Random Forest Base:** Logró una Exactitud global (79%), pero presentó un Recall bajo (50%), evidenciando un ligero sobreajuste (overfitting).
+3. **Random Forest Optimizado (GridSearchCV):** Al aplicar Validación Cruzada (K-Fold) y limitar la profundidad del árbol (`max_depth=5`), forzamos al modelo a generalizar mejor, elevando el Recall al **73%**.
+4. **Regresión Logística:** Aunque su Exactitud global fue menor (74%), demostró un desempeño superior en la métrica más crítica, obteniendo un **Recall del 79%** en la detección de fuga.
 
-Random Forest Optimizado (GridSearchCV): Aplicamos Validación Cruzada Estratificada (K-Fold). Justificación: Al podar la profundidad del árbol (max_depth=5), forzamos al modelo a generalizar mejor, elevando el Recall al 73%.
+**Selección Final:** Bajo la premisa de negocio de que un "Falso Negativo" (perder a un cliente por no detectarlo) es más costoso que un "Falso Positivo", se seleccionó y serializó la **Regresión Logística** como el modelo óptimo.
 
-Regresión Logística: Modelo lineal paramétrico sensible a la escala (justificando nuestra estandarización previa). Justificación Final: Fue seleccionado como el modelo óptimo al lograr el mejor Recall (79%). En problemas de Churn, es vital minimizar los Falsos Negativos (clientes que se van sin ser detectados).
+---
 
-🎯 Conclusiones y Estrategias Basadas en Evidencia
-Basados en la Extracción de Importancia (Feature Importance) y los Coeficientes de la Regresión Logística, propusimos las siguientes estrategias:
+## 🎯 Conclusiones y Estrategias Basadas en Evidencia
 
-Migración de Contratos: El contrato mensual (Month-to-month) es el mayor riesgo. Estrategia: Ofrecer mejoras en el servicio a quienes acepten pasar a un contrato anual.
+El análisis de importancia de variables confirmó los siguientes impulsores de fuga y retención, sobre los cuales proponemos 4 estrategias:
 
-Fomento del Pago Automático: El pago mediante "Electronic check" presenta alta fricción. Estrategia: Ofrecer un descuento permanente (ej. 5%) en la factura a quienes domicilien su pago a tarjeta de crédito.
+1. **Migración de Contratos:** El contrato mensual (`Month-to-month`) es el principal riesgo. *Estrategia:* Ofrecer mejoras de servicio a clientes que acepten pasar a formato anual.
+2. **Fomento del Pago Automático:** El pago con cheque electrónico presenta alta correlación con la cancelación. *Estrategia:* Ofrecer un descuento permanente en la factura a quienes domicilien su pago a tarjeta de crédito.
+3. **Programa de Onboarding:** La fidelidad se construye con el tiempo (`Tenure`). *Estrategia:* Implementar soporte proactivo y llamadas de control durante los primeros 6 meses.
+4. **Alerta Temprana en Call Center:** *Estrategia:* Implementar el modelo serializado (`.pkl`) en los sistemas de atención al cliente para habilitar ofertas de retención en tiempo real.
 
-Programa de Onboarding: Dado que la retención aumenta con el tiempo acumulado (Tenure), estrategia: Implementar soporte proactivo durante los primeros 6 meses críticos.
+---
 
-Alerta Temprana en Call Center: Estrategia: Desplegar el modelo serializado (.pkl) en los sistemas de atención al cliente para habilitar ofertas de retención en tiempo real cuando se detecte un alto riesgo de fuga.
+## 🚀 Instrucciones para Ejecutar el Proyecto
 
-🚀 Instrucciones para Ejecutar el Proyecto
-1. Requisitos e Instalación
-Asegúrate de contar con Python 3.8+ e instala las dependencias:
-
-Bash
+**1. Requisitos e Instalación**
+Asegúrate de tener un entorno de Python 3.8+ y ejecuta en tu terminal:
 pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn
-2. Carga de Datos y Ejecución
-No es necesario descargar archivos locales. El cuaderno Telecom_X_Modelado.ipynb está configurado para leer el dataset limpio directamente desde este repositorio. Simplemente abre el cuaderno y ejecuta las celdas de arriba hacia abajo para replicar el EDA, entrenar los modelos y generar el archivo de producción .pkl.
 
-🛠️ Tecnologías Utilizadas
-Lenguaje: Python
+**2. Ejecución**
+No necesitas descargar archivos locales. Abre el cuaderno `Telecom_X_Modelado.ipynb` en Jupyter o Colab y ejecuta las celdas secuencialmente. El código descargará los datos limpios de este repositorio, entrenará los modelos y generará el archivo final `.pkl`.
 
-Manipulación y Análisis: Pandas, Numpy
+---
 
-Visualización: Matplotlib, Seaborn
-
-Machine Learning: Scikit-Learn (Pipelines, GridSearchCV, LogisticRegression, RandomForest)
-
-Manejo de Desbalanceo: Imbalanced-learn (SMOTE)
+## 🛠️ Tecnologías Utilizadas
+* **Lenguaje:** Python
+* **Manipulación y Visualización:** Pandas, Numpy, Matplotlib, Seaborn
+* **Machine Learning:** Scikit-Learn
+* **Balanceo de Datos:** Imbalanced-learn (SMOTE)
