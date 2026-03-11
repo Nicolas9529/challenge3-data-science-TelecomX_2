@@ -1,82 +1,57 @@
-# Proyecto Telecom X: Análisis y Predicción de Fuga de Clientes (Churn)
+# Predicción de Fuga de Clientes (Churn) - Proyecto Telecom X
 
-## Descripción del Proyecto
-Este proyecto de Data Science tiene como objetivo principal predecir la cancelación de servicios (Churn) en la empresa de telecomunicaciones "Telecom X". A través de la aplicación del método científico, analizamos el comportamiento de los clientes, limpiamos los datos históricos y entrenamos modelos de Machine Learning para identificar proactivamente qué usuarios tienen mayor probabilidad de abandonar la compañía, permitiendo así diseñar estrategias de retención basadas en evidencia.
+## Descripción General
+Este proyecto de Machine Learning tiene como objetivo predecir la cancelación de servicios (Churn) en una empresa de telecomunicaciones. A través del entrenamiento y evaluación de modelos de clasificación, el proyecto busca identificar proactivamente a los usuarios con mayor probabilidad de abandonar la compañía, permitiendo la transición de un modelo de retención reactivo a uno predictivo y basado en evidencia.
 
-El proyecto se divide en dos grandes fases: **Análisis Exploratorio de Datos (EDA)** y **Modelado Predictivo**.
+## Contexto de Negocio y Métrica de Éxito
+En la industria de las telecomunicaciones, el costo de adquirir un nuevo cliente es significativamente mayor que el de retener a uno existente. Por lo tanto, el problema de negocio dicta que un **Falso Negativo** (no detectar a un cliente que se va a fugar) tiene un impacto financiero mucho más grave que un **Falso Positivo** (ofrecer un incentivo de retención a un cliente que planeaba quedarse). 
 
----
+Bajo esta premisa, el desarrollo y la selección del modelo predictivo se optimizó priorizando la métrica de **Recall** para la clase minoritaria (Churn = 1), asegurando la máxima captura de posibles bajas.
 
-## Metodología (Enfoque Científico)
+## Metodología y Preprocesamiento de Datos
+El flujo de trabajo se estructuró bajo estándares rigurosos de Ciencia de Datos para evitar fugas de información (*Data Leakage*) y asegurar la generalización del modelo:
 
-### Fase 1: Observación y Preprocesamiento de Datos (Parte 1)
-En la primera etapa, trabajamos con los datos crudos para entender la naturaleza del problema.
-* **Limpieza de Datos:** Tratamiento de valores nulos, corrección de formatos y eliminación de variables sin poder predictivo. El resultado de esta fase fue exportado en el archivo `datos_tratados.csv`.
-* **Análisis Exploratorio (EDA):** Identificamos visualmente patrones preliminares. Observamos que variables como el tiempo en la empresa (`Tenure`) y los costos (`Charges`) presentaban distribuciones distintas entre los clientes que se fugaban y los que se quedaban.
+1. **Ingeniería de Características:** Transformación de variables categóricas mediante `Label Encoding` y `One-Hot Encoding`.
+2. **División de Datos:** Separación estratificada del conjunto de datos en Entrenamiento (80%) y Prueba (20%).
+3. **Balanceo de Clases:** Aplicación de la técnica **SMOTE** (Synthetic Minority Over-sampling Technique) exclusivamente en el conjunto de entrenamiento para abordar el desbalanceo de la variable objetivo.
+4. **Escalado:** Estandarización de variables numéricas continuas mediante `StandardScaler` para optimizar la convergencia de modelos paramétricos.
 
-### Fase 2: Experimentación y Modelado (Parte 2)
-Con los datos limpios, formulamos la hipótesis de que podíamos predecir el Churn utilizando algoritmos de clasificación.
-* **Preparación:** * Se aplicó codificación (Label Encoding y One-Hot Encoding) para transformar variables categóricas en numéricas.
-  * Los datos se dividieron en conjuntos de Entrenamiento (80%) y Prueba (20%) para evitar Data Leakage.
-  * Se aplicó **SMOTE** únicamente al conjunto de entrenamiento para balancear la clase minoritaria (Churn=1), permitiendo a los modelos aprender de forma equitativa.
-  * Se estandarizaron las variables numéricas con `StandardScaler`.
-* **Modelos Entrenados:** Evaluamos dos algoritmos con naturalezas distintas:
-  1. **Random Forest:** Modelo de ensamble basado en árboles (no requiere normalización estricta). Actuó como nuestro modelo base.
-  2. **Regresión Logística:** Modelo lineal paramétrico sensible a la escala (justificando la estandarización previa).
+## Modelado y Evaluación
+Se entrenaron y contrastaron dos algoritmos de naturalezas distintas para evaluar su rendimiento sobre el conjunto de prueba:
 
----
+* **Random Forest (Modelo Base):** Alcanzó una exactitud global (Accuracy) del 79%. Sin embargo, presentó un rendimiento deficiente en la detección de la clase minoritaria, obteniendo un Recall de solo el 50%, lo que indica un sesgo inaceptable hacia la clase mayoritaria.
+* **Regresión Logística:** Aunque presentó una exactitud global ligeramente inferior (74%), demostró un desempeño muy superior en la métrica crítica, alcanzando un **Recall del 79%** en la detección de fuga.
 
-## Resultados de la Experimentación
+**Selección de Modelo:** Se seleccionó la Regresión Logística como el modelo final para producción debido a su superioridad en la métrica de Recall y a su alta interpretabilidad a través del análisis de coeficientes.
 
-La evaluación de los modelos en el conjunto de prueba arrojó los siguientes resultados:
+## Análisis de Importancia de Variables (Feature Importance)
+El análisis de los coeficientes del modelo logístico reveló patrones clave en el comportamiento del usuario:
 
-1. **Random Forest:** Logró la mejor Exactitud global (Accuracy: 79%). Sin embargo, presentó problemas para detectar la clase minoritaria, obteniendo un Recall del 50% para la clase Churn. Esto sugiere un ligero sesgo hacia la clase mayoritaria (retención).
-2. **Regresión Logística:** Aunque su Exactitud global fue menor (74%), demostró un desempeño muy superior en la métrica más crítica para el negocio: obtuvo un **Recall del 79%** en la detección de fuga.
+* **Factores de Riesgo (Impulsores de Churn):** Los contratos de renovación mensual (`Contract_Month-to-month`) y los métodos de pago manuales (`PaymentMethod_Electronic check`) presentan la correlación positiva más fuerte con la fuga de clientes.
+* **Factores de Retención:** Los contratos a largo plazo (`Contract_Two year`) y la antigüedad acumulada del cliente (`Tenure`) son los principales estabilizadores de la cartera.
 
-**Selección del Modelo:** Bajo la premisa de negocio de que un "Falso Positivo" (ofrecer un descuento a quien se iba a quedar) es menos costoso que un "Falso Negativo" (perder a un cliente por no detectarlo), se selecciona la **Regresión Logística** como el modelo óptimo.
+## Recomendaciones Estratégicas
+Con base en los resultados del modelo, se proponen las siguientes acciones de negocio:
 
----
+1. **Migración de Contratos:** Diseñar campañas de incentivos (ej. mejora temporal de ancho de banda) enfocadas en trasladar clientes de modalidad mensual a contratos anuales.
+2. **Automatización de Pagos:** Ofrecer descuentos permanentes en la facturación a los usuarios que transicionen de pagos manuales a cobro automático mediante tarjeta de crédito.
+3. **Sistema de Alerta Temprana:** Integrar las predicciones probabilísticas de la Regresión Logística en el CRM del Call Center, habilitando a los agentes de soporte para ofrecer incentivos de retención en tiempo real cuando un cliente de alto riesgo establezca contacto.
 
-## Análisis de Variables (Feature Importance)
-Tanto la extracción de importancia de Random Forest como el análisis de coeficientes de la Regresión Logística confirmaron los mismos patrones:
-* **Variables que impulsan la fuga:** El contrato mes a mes (`Contract_Month-to-month`) y el pago con cheque electrónico (`PaymentMethod_Electronic check`). Adicionalmente, los altos cargos totales (`ChargesTotal`) empujan al cliente a la salida.
-* **Variables que retienen al cliente:** Contratos a largo plazo (`Contract_Two year`) y el tiempo acumulado en la empresa (`Tenure`). La fidelidad se construye con el tiempo.
+## Estructura del Repositorio
+* `data/datos_tratados.csv`: Dataset preprocesado y listo para la ingesta del modelo.
+* `notebooks/Telecom_X_Modelado.ipynb`: Jupyter Notebook detallado con el código fuente del entrenamiento, validación y evaluación de los modelos.
+* `images/`: Gráficos de evaluación y matrices de confusión exportadas.
+* `modelo_churn_produccion.pkl`: Modelo final serializado y optimizado para su despliegue.
 
----
+## Ejecución y Reproducibilidad
+Para reproducir el entorno de desarrollo y ejecutar el análisis:
 
-## Conclusiones y Estrategias Basadas en Evidencia
-Basados estrictamente en los datos analizados y el modelo seleccionado, proponemos a la gerencia las siguientes estrategias de retención:
+1. Instalar las dependencias requeridas:
+   `pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn`
+2. Ejecutar el cuaderno `Telecom_X_Modelado.ipynb` para visualizar el paso a paso del modelado y la generación del archivo `.pkl`.
 
-1. **Migración de Contratos:** El modelo indica que el contrato mensual es el principal riesgo. Estrategia: Ofrecer descuentos agresivos en los primeros meses o mejoras en el servicio (ej. mayor velocidad) a clientes que acepten pasar de formato mensual a contrato anual.
-2. **Fomento del Pago Automático:** El pago mediante "Electronic check" presenta una alta correlación con la cancelación. Estrategia: Eliminar esta fricción ofreciendo un descuento permanente (ej. 5%) en la factura a quienes domicilien su pago a una tarjeta de crédito o transferencia bancaria.
-3. **Programa de Onboarding (Cuidado de los nuevos):** Dado que la retención aumenta significativamente con el `Tenure`, los primeros meses son críticos. Estrategia: Implementar soporte proactivo y llamadas de control de calidad durante los primeros 6 meses.
-4. **Sistema de Alerta Temprana en Call Center:** Estrategia: Implementar el modelo de Regresión Logística en los sistemas de atención al cliente. Si el modelo arroja una alta probabilidad de fuga en tiempo real, habilitar a los agentes de soporte para ofrecer incentivos de retención de inmediato.
-   
----
-
-## Estructura del Proyecto
-El repositorio está organizado de la siguiente manera para facilitar su reproducibilidad:
-* **data/datos_tratados.csv**: Dataset limpio y preprocesado.
-* **notebooks/Telecom_X_Modelado.ipynb**: Cuaderno principal con el código.
-* **images/**: Visualizaciones exportadas del EDA (matriz de correlación, boxplots).
-* **modelo_churn_produccion.pkl**: Modelo final serializado y listo para usar.
-* **README.md**: Documentación del proyecto.
-
----
-
-## Instrucciones para Ejecutar el Proyecto
-**1. Requisitos e Instalación**
-Asegúrate de tener Python 3.8+ e instala las dependencias en tu terminal:
-`pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn`
-
-**2. Ejecución**
-Abre el cuaderno `Telecom_X_Modelado.ipynb` en Jupyter o Colab y ejecuta las celdas secuencialmente. El código cargará los datos, entrenará los modelos y generará el archivo final `.pkl`.
-
----
-
-## Tecnologías Utilizadas
-* **Lenguaje:** Python
-* **Manipulación de Datos:** Pandas, Numpy
-* **Visualización:** Matplotlib, Seaborn
-* **Machine Learning:** Scikit-Learn (Modelado, Preprocesamiento, Métricas)
-* **Balanceo de Datos:** Imbalanced-learn (SMOTE)
+## Stack Tecnológico
+* **Lenguaje:** Python 3.8+
+* **Procesamiento de Datos:** Pandas, Numpy
+* **Machine Learning:** Scikit-Learn, Imbalanced-learn
+* **Visualización de Datos:** Matplotlib, Seaborn
