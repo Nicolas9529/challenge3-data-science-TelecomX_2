@@ -1,13 +1,13 @@
-# 📉 Proyecto Telecom X: Análisis y Predicción de Fuga de Clientes (Churn)
+# Proyecto Telecom X: Análisis y Predicción de Fuga de Clientes (Churn)
 
-## 📖 Descripción del Proyecto
+## Descripción del Proyecto
 Este proyecto de Data Science tiene como objetivo principal predecir la cancelación de servicios (Churn) en la empresa de telecomunicaciones "Telecom X". A través de la aplicación del método científico, analizamos el comportamiento de los clientes, limpiamos los datos históricos y entrenamos modelos de Machine Learning para identificar proactivamente qué usuarios tienen mayor probabilidad de abandonar la compañía, permitiendo así diseñar estrategias de retención basadas en evidencia.
 
 El proyecto se divide en dos grandes fases: **Análisis Exploratorio de Datos (EDA)** y **Modelado Predictivo**.
 
 ---
 
-## 🔬 Metodología (Enfoque Científico)
+## Metodología (Enfoque Científico)
 
 ### Fase 1: Observación y Preprocesamiento de Datos (Parte 1)
 En la primera etapa, trabajamos con los datos crudos para entender la naturaleza del problema.
@@ -26,7 +26,7 @@ Con los datos limpios, formulamos la hipótesis de que podíamos predecir el Chu
 
 ---
 
-## 📊 Resultados de la Experimentación
+## Resultados de la Experimentación
 
 La evaluación de los modelos en el conjunto de prueba arrojó los siguientes resultados:
 
@@ -37,14 +37,14 @@ La evaluación de los modelos en el conjunto de prueba arrojó los siguientes re
 
 ---
 
-## 💡 Análisis de Variables (Feature Importance)
+## Análisis de Variables (Feature Importance)
 Tanto la extracción de importancia de Random Forest como el análisis de coeficientes de la Regresión Logística confirmaron los mismos patrones:
 * **Variables que impulsan la fuga:** El contrato mes a mes (`Contract_Month-to-month`) y el pago con cheque electrónico (`PaymentMethod_Electronic check`). Adicionalmente, los altos cargos totales (`ChargesTotal`) empujan al cliente a la salida.
 * **Variables que retienen al cliente:** Contratos a largo plazo (`Contract_Two year`) y el tiempo acumulado en la empresa (`Tenure`). La fidelidad se construye con el tiempo.
 
 ---
 
-## 🎯 Conclusiones y Estrategias Basadas en Evidencia
+## Conclusiones y Estrategias Basadas en Evidencia
 Basados estrictamente en los datos analizados y el modelo seleccionado, proponemos a la gerencia las siguientes estrategias de retención:
 
 1. **Migración de Contratos:** El modelo indica que el contrato mensual es el principal riesgo. Estrategia: Ofrecer descuentos agresivos en los primeros meses o mejoras en el servicio (ej. mayor velocidad) a clientes que acepten pasar de formato mensual a contrato anual.
@@ -54,7 +54,7 @@ Basados estrictamente en los datos analizados y el modelo seleccionado, proponem
    
 ---
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 El repositorio está organizado de la siguiente manera para facilitar su reproducibilidad:
 * **data/datos_tratados.csv**: Dataset limpio y preprocesado.
 * **notebooks/Telecom_X_Modelado.ipynb**: Cuaderno principal con el código.
@@ -64,7 +64,7 @@ El repositorio está organizado de la siguiente manera para facilitar su reprodu
 
 ---
 
-## 🚀 Instrucciones para Ejecutar el Proyecto
+## Instrucciones para Ejecutar el Proyecto
 **1. Requisitos e Instalación**
 Asegúrate de tener Python 3.8+ e instala las dependencias en tu terminal:
 `pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn`
@@ -74,7 +74,7 @@ Abre el cuaderno `Telecom_X_Modelado.ipynb` en Jupyter o Colab y ejecuta las cel
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 * **Lenguaje:** Python
 * **Manipulación de Datos:** Pandas, Numpy
 * **Visualización:** Matplotlib, Seaborn
